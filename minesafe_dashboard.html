@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MineSafe | Subsidence Monitoring</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d2e;--panel2:#172438;--line:#26364d;--text:#e8eef7;--muted:#91a2b9;--teal:#36d6c2;--green:#45d483;--amber:#ffbf5e;--red:#ff6978;--blue:#6da9ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.sidebar{background:#0e1929;border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;gap:26px}
+.brand{display:flex;align-items:center;gap:11px;padding:0 8px}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1d9d9b,#2866a8);display:grid;place-items:center;font-size:20px}.brand b{font-size:16px;letter-spacing:.3px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.nav-label{font-size:10px;color:#6f829b;letter-spacing:1.5px;padding:0 12px;margin-bottom:8px}.nav a{display:flex;gap:12px;align-items:center;text-decoration:none;color:#9aabc0;padding:11px 12px;border-radius:9px;margin:3px 0}.nav a.active,.nav a:hover{background:#1a2c43;color:white}.nav a.active{box-shadow:inset 3px 0 var(--teal)}.nav span{width:20px;text-align:center}.side-foot{margin-top:auto;border:1px solid var(--line);background:#132238;padding:13px;border-radius:12px;color:var(--muted);font-size:11px}.side-foot b{display:block;color:var(--text);font-size:12px;margin-bottom:5px}
+main{padding:26px 30px 40px;max-width:1600px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.eyebrow{color:var(--teal);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}.top h1{font-size:25px;margin:5px 0 3px}.sub{color:var(--muted);font-size:12px}.top-actions{display:flex;align-items:center;gap:10px}.live{display:flex;align-items:center;gap:7px;color:#b5c5d8;background:#132238;border:1px solid var(--line);border-radius:20px;padding:8px 12px;font-size:11px}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}button{border:0;border-radius:8px;padding:10px 14px;font-weight:650;cursor:pointer;background:var(--teal);color:#06201f}button.secondary{background:#1b2c43;color:#dbe8f8;border:1px solid var(--line)}button:hover{filter:brightness(1.08)}
+.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:17px;min-width:0}.stat-head{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.stat-icon{font-size:17px}.value{font-size:28px;font-weight:750;margin:12px 0 3px;letter-spacing:-.7px}.trend{font-size:11px;color:var(--muted)}.green{color:var(--green)}.amber{color:var(--amber)}.red{color:var(--red)}.blue{color:var(--blue)}
+.main-grid{grid-template-columns:1.5fr 1fr;margin-bottom:15px}.card-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.card-title h2{font-size:14px;margin:0}.card-title small{color:var(--muted);font-size:11px}.select{background:#1a2a40;color:#cbd8e8;border:1px solid var(--line);padding:7px 9px;border-radius:7px;font-size:11px}
+.chart-wrap{height:210px;position:relative}.chart-wrap canvas{width:100%;height:100%}.legend{display:flex;gap:17px;margin-top:10px;color:var(--muted);font-size:10px}.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+.zone-map{height:210px;border-radius:10px;background:linear-gradient(180deg,#15283a,#102032);position:relative;overflow:hidden;padding:14px}.tunnel{position:absolute;border:2px dashed #48617b;border-radius:50%;width:78%;height:100px;left:11%;top:55px;transform:rotate(-8deg)}.branch{position:absolute;height:2px;background:#48617b;transform-origin:left}.branch.one{width:35%;left:23%;top:100px;transform:rotate(-35deg)}.branch.two{width:32%;left:55%;top:95px;transform:rotate(30deg)}.pin{position:absolute;width:13px;height:13px;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 5px #45d48333;background:var(--green)}.pin.warn{background:var(--amber);box-shadow:0 0 0 5px #ffbf5e33}.pin.crit{background:var(--red);box-shadow:0 0 0 5px #ff697833}.pin.p1{left:24%;top:42%}.pin.p2{left:47%;top:57%}.pin.p3{left:69%;top:36%}.pin.p4{left:78%;top:68%}.map-label{position:absolute;color:#a9bdd1;font-size:9px}.map-label.l1{left:17%;top:22%}.map-label.l2{left:43%;top:75%}.map-label.l3{right:9%;top:17%}.map-key{display:flex;gap:13px;margin-top:12px;color:var(--muted);font-size:10px}
+.bottom-grid{grid-template-columns:1.35fr 1fr}.table{width:100%;border-collapse:collapse;text-align:left;font-size:11px}.table th{color:#8194ac;font-weight:600;padding:10px 8px;border-bottom:1px solid var(--line)}.table td{padding:12px 8px;border-bottom:1px solid #202e42;color:#cbd8e8}.table tr:last-child td{border:0}.node{font-weight:700;color:#eef5ff}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 8px;font-size:10px;font-weight:700}.pill:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}.pill.ok{color:var(--green);background:#163629}.pill.warn{color:var(--amber);background:#3a2e1a}.pill.crit{color:var(--red);background:#3b2029}.alerts{display:flex;flex-direction:column;gap:10px}.alert{display:flex;gap:10px;padding:11px;border-radius:9px;background:#18263a;border:1px solid #273950}.alert-icon{font-size:16px}.alert b{display:block;font-size:11px;margin-bottom:3px}.alert p{margin:0;color:var(--muted);font-size:10px}.alert time{display:block;color:#71849c;font-size:9px;margin-top:5px}
+.footer-note{color:#71839b;font-size:10px;margin-top:18px;text-align:center}
+@media(max-width:1000px){.app{grid-template-columns:190px 1fr}.stats{grid-template-columns:repeat(2,1fr)}.main-grid,.bottom-grid{grid-template-columns:1fr}}
+@media(max-width:680px){.app{display:block}.sidebar{padding:13px;gap:12px}.brand{padding:0}.nav-label,.side-foot{display:none}.nav{display:flex;overflow:auto}.nav a{white-space:nowrap;padding:9px}.nav a span{display:none}main{padding:20px 14px}.top{align-items:flex-start;flex-direction:column}.top-actions{width:100%;justify-content:space-between}.stats{gap:9px}.card{padding:13px}.value{font-size:23px}.table{min-width:530px}.table-scroll{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">⛏</div><div><b>MINE<span style="color:var(--teal)">SAFE</span></b><small>Subsidence intelligence</small></div></div>
+  <div class="nav"><div class="nav-label">WORKSPACE</div>
+    <a class="active" href="#"><span>▦</span> Overview</a>
+    <a href="#nodes"><span>⌁</span> Sensor nodes</a>
+    <a href="#map"><span>⌖</span> Mine zone map</a>
+    <a href="#alerts"><span>⚑</span> Alerts & events</a>
+    <a href="#reports"><span>▤</span> Reports</a>
+  </div>
+  <div class="side-foot"><b>DEMO ENVIRONMENT</b>Illustrative sensor readings only. Not connected to live mine hardware.</div>
+</aside>
+<main>
+  <header class="top">
+    <div><div class="eyebrow">Mine monitoring / Control room</div><h1>Subsidence Monitoring Dashboard</h1><div class="sub">Underground Coal Mine · Panel A-07 · Demo site</div></div>
+    <div class="top-actions"><div class="live"><span class="dot"></span> DEMO LIVE <span id="clock">--:--:--</span></div><button id="simulate">↻ Simulate reading</button></div>
+  </header>
+  <section class="grid stats">
+    <div class="card"><div class="stat-head">Active sensor nodes <span class="stat-icon">⌁</span></div><div class="value" id="activeNodes">4 <span style="font-size:13px;color:var(--muted);font-weight:500">/ 4</span></div><div class="trend"><span class="green">● All connected</span> · LoRa mesh</div></div>
+    <div class="card"><div class="stat-head">Current zone status <span class="stat-icon">◉</span></div><div class="value amber" id="zoneStatus">WARNING</div><div class="trend">1 zone requires attention</div></div>
+    <div class="card"><div class="stat-head">Maximum tilt <span class="stat-icon">↗</span></div><div class="value" id="maxTilt">2.4°</div><div class="trend">Alert threshold: 3.0°</div></div>
+    <div class="card"><div class="stat-head">Average node battery <span class="stat-icon">▰</span></div><div class="value green" id="avgBattery">82%</div><div class="trend">Estimated remaining: 8.7 days*</div></div>
+  </section>
+  <section class="grid main-grid">
+    <div class="card"><div class="card-title"><div><h2>Ground movement trends</h2><small>Tilt readings over recent samples</small></div><select class="select" id="period"><option>Last 12 readings</option><option>Last 6 readings</option></select></div>
+      <div class="chart-wrap"><canvas id="trendChart"></canvas></div><div class="legend"><span><i style="background:var(--teal)"></i>Tilt (degrees)</span><span><i style="background:var(--amber)"></i>Warning threshold (2.0°)</span><span><i style="background:var(--red)"></i>Critical threshold (3.0°)</span></div>
+    </div>
+    <div class="card" id="map"><div class="card-title"><div><h2>Underground node layout</h2><small>Schematic mine panel · not to scale</small></div><span class="pill ok">4 nodes online</span></div>
+      <div class="zone-map"><div class="tunnel"></div><div class="branch one"></div><div class="branch two"></div><span class="map-label l1">North entry</span><span class="map-label l2">Panel A-07</span><span class="map-label l3">Ventilation shaft</span><i class="pin p1"></i><i class="pin warn p2"></i><i class="pin p3"></i><i class="pin p4"></i></div>
+      <div class="map-key"><span><i class="pin" style="position:static;display:inline-block;width:8px;height:8px"></i> Normal</span><span><i class="pin warn" style="position:static;display:inline-block;width:8px;height:8px"></i> Warning</span><span><i class="pin crit" style="position:static;display:inline-block;width:8px;height:8px"></i> Critical</span></div>
+    </div>
+  </section>
+  <section class="grid bottom-grid">
+    <div class="card" id="nodes"><div class="card-title"><div><h2>Sensor node status</h2><small>Live-style demo telemetry</small></div><button class="secondary" id="export">↓ Export CSV</button></div>
+      <div class="table-scroll"><table class="table"><thead><tr><th>NODE ID</th><th>TILT</th><th>VIBRATION</th><th>DISPLACEMENT</th><th>BATTERY</th><th>STATUS</th></tr></thead><tbody id="nodeRows">
+      <tr><td class="node">NODE-01</td><td>0.8°</td><td>Low</td><td>1.2 mm</td><td>91%</td><td><span class="pill ok">Normal</span></td></tr>
+      <tr><td class="node">NODE-02</td><td>2.4°</td><td>Medium</td><td>3.8 mm</td><td>76%</td><td><span class="pill warn">Warning</span></td></tr>
+      <tr><td class="node">NODE-03</td><td>1.1°</td><td>Low</td><td>1.7 mm</td><td>84%</td><td><span class="pill ok">Normal</span></td></tr>
+      <tr><td class="node">NODE-04</td><td>0.6°</td><td>Low</td><td>0.9 mm</td><td>77%</td><td><span class="pill ok">Normal</span></td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="card" id="alerts"><div class="card-title"><div><h2>Recent alerts & events</h2><small>Operator attention required</small></div><span class="pill warn">1 active</span></div>
+      <div class="alerts" id="alertList">
+        <div class="alert"><div class="alert-icon">⚠️</div><div><b class="amber">NODE-02 · Tilt warning</b><p>Tilt reached 2.4°. Check the local ground condition and verify the sensor mounting.</p><time>Just now · Panel A-07</time></div></div>
+        <div class="alert"><div class="alert-icon">✓</div><div><b class="green">LoRa mesh · Connected</b><p>All four demo nodes are reporting to the gateway.</p><time>08:42 · Network event</time></div></div>
+        <div class="alert"><div class="alert-icon">▰</div><div><b>Battery health · Normal</b><p>All node batteries are above the demo low-battery threshold of 20%.</p><time>08:30 · Power event</time></div></div>
+      </div>
+    </div>
+  </section>
+  <div class="footer-note">*Battery duration is an illustrative estimate. Actual runtime must be measured on the selected hardware and duty cycle. This dashboard uses sample data and is not a certified mine-safety system.</div>
+</main>
+</div>
+<script>
+const samples=[0.7,0.8,0.9,0.8,1.0,1.1,1.0,1.3,1.4,1.8,2.1,2.4];
+const nodes=[
+{id:"NODE-01",tilt:0.8,vib:"Low",disp:1.2,batt:91,status:"Normal"},
+{id:"NODE-02",tilt:2.4,vib:"Medium",disp:3.8,batt:76,status:"Warning"},
+{id:"NODE-03",tilt:1.1,vib:"Low",disp:1.7,batt:84,status:"Normal"},
+{id:"NODE-04",tilt:0.6,vib:"Low",disp:0.9,batt:77,status:"Normal"}];
+const canvas=document.getElementById('trendChart'),ctx=canvas.getContext('2d');
+function drawChart(){const rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.scale(dpr,dpr);const w=rect.width,h=rect.height,p={l:32,r:12,t:12,b:24};const vals=document.getElementById('period').value.includes('6')?samples.slice(-6):samples;const max=4;
+ctx.clearRect(0,0,w,h);ctx.font='10px system-ui';ctx.fillStyle='#8194ac';ctx.strokeStyle='#26364d';ctx.lineWidth=1;
+for(let v=0;v<=4;v++){let y=p.t+(h-p.t-p.b)*(1-v/max);ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(w-p.r,y);ctx.stroke();ctx.fillText(v.toFixed(0),7,y+3)}
+function y(v){return p.t+(h-p.t-p.b)*(1-v/max)}function x(i){return p.l+i*(w-p.l-p.r)/(vals.length-1)}
+[[2,'#ffbf5e'],[3,'#ff6978']].forEach(([v,c])=>{ctx.setLineDash([5,4]);ctx.strokeStyle=c;ctx.beginPath();ctx.moveTo(p.l,y(v));ctx.lineTo(w-p.r,y(v));ctx.stroke()});ctx.setLineDash([]);
+ctx.strokeStyle='#36d6c2';ctx.lineWidth=2.5;ctx.beginPath();vals.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
+vals.forEach((v,i)=>{ctx.fillStyle='#36d6c2';ctx.beginPath();ctx.arc(x(i),y(v),3.5,0,Math.PI*2);ctx.fill()});
+ctx.fillStyle='#8194ac';['-11','-9','-7','-5','-3','-1'].forEach((t,i)=>{let xx=p.l+i*(w-p.l-p.r)/5;ctx.fillText(t+'h',xx-8,h-5)});
+}
+function render(){document.getElementById('nodeRows').innerHTML=nodes.map(n=>`<tr><td class="node">${n.id}</td><td>${n.tilt.toFixed(1)}°</td><td>${n.vib}</td><td>${n.disp.toFixed(1)} mm</td><td>${n.batt}%</td><td><span class="pill ${n.status==='Normal'?'ok':n.status==='Warning'?'warn':'crit'}">${n.status}</span></td></tr>`).join('');
+let avg=Math.round(nodes.reduce((a,n)=>a+n.batt,0)/nodes.length),max=Math.max(...nodes.map(n=>n.tilt)),warn=nodes.filter(n=>n.status==='Warning').length,crit=nodes.filter(n=>n.status==='Critical').length;
+document.getElementById('avgBattery').textContent=avg+'%';document.getElementById('maxTilt').textContent=max.toFixed(1)+'°';document.getElementById('zoneStatus').textContent=crit?'CRITICAL':warn?'WARNING':'NORMAL';document.getElementById('zoneStatus').className='value '+(crit?'red':warn?'amber':'green');document.querySelector('.stats .card:nth-child(2) .trend').textContent=crit?crit+' critical node(s) require immediate review':warn?warn+' node(s) require attention':'All nodes within demo limits';}
+document.getElementById('simulate').onclick=()=>{let n=nodes[Math.floor(Math.random()*nodes.length)];n.tilt=Math.max(.2,Math.min(3.8,n.tilt+(Math.random()-.35)*.7));n.disp=Math.max(.2,n.disp+(Math.random()-.3)*.9);n.vib=n.tilt>2.8?'High':n.tilt>1.8?'Medium':'Low';n.status=n.tilt>=3?'Critical':n.tilt>=2?'Warning':'Normal';n.batt=Math.max(10,n.batt-(Math.random()*.4));samples.push(n.tilt);if(samples.length>12)samples.shift();render();drawChart();const item=document.createElement('div');item.className='alert';item.innerHTML=`<div class="alert-icon">⚡</div><div><b class="${n.status==='Critical'?'red':n.status==='Warning'?'amber':'green'}">${n.id} · ${n.status} reading</b><p>Simulated tilt ${n.tilt.toFixed(1)}° and displacement ${n.disp.toFixed(1)} mm.</p><time>Just now · Demo simulation</time></div>`;document.getElementById('alertList').prepend(item);};
+document.getElementById('period').onchange=drawChart;
+document.getElementById('export').onclick=()=>{const rows=[['Node ID','Tilt degrees','Vibration','Displacement mm','Battery percent','Status'],...nodes.map(n=>[n.id,n.tilt,n.vib,n.disp,n.batt,n.status])];const csv=rows.map(r=>r.join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='minesafe-node-readings.csv';a.click();URL.revokeObjectURL(a.href);};
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString();}tick();setInterval(tick,1000);render();drawChart();window.addEventListener('resize',drawChart);
+</script>
+</body>
+</html>
